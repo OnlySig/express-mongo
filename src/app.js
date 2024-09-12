@@ -1,32 +1,30 @@
 //nesse file iremos iniciar o express
 import express from 'express';
 //app é uma instancia de express
+import connectarNoDb from './config/dbConnect.js';
+import livro from './models/Livro.js'
+
+const conexao = await connectarNoDb();
+conexao.on("error", (error) => {
+  console.error("Erro de conexão: ", error);
+});
+conexao.once("open", () => {
+  console.log('Conexão com o mongoDb feita com sucesso!')
+})
 const app = express();
 app.use(express.json());//middleware
 //esse app.get recebe 2 parametros o primeiro é uma string, que se refere a url e o segundo parametro é um callback.
-const livros = [{
-  id: 1,
-  title: 'O senhor dos aneis'
-}, {
-  id: 2,
-  title: 'Duna'
-},{
-  id: 3,
-  title: 'gelo & fogo'
-}];
-const acharLivro = (book, INDEX = false) => {
-  if(INDEX) {
-    return livros.findIndex(e => e.id === Number(book));
-  }
-  return livros.find(e => e.id === Number(book));
-}
+
 //na maioria das resposta o servidor sempre vai retornar um status code, mensagens e dados, no primeiro get temos tanto o status code "200" e uma mensagem tipo string LINHA: 16.
 //no segundo get tbm temos status code porem agr estamos enviando dados formatados em JSON LINHA: 19.
 app.get("/", (req, res) => {
   res.status(200).send('Refatorando o server com o framework express');
 });
 
-app.get("/livros", (req, res) => res.status(200).json(livros));
+app.get("/livros", async (req, res) => {
+  const listaLivros = await livro.find({});
+  res.status(200).json(listaLivros);
+});
 
 app.get("/livros/:id", (req, res) => {
   const achar = acharLivro(req.params.id);
@@ -62,4 +60,5 @@ app.delete("/livros/:id", (req, res) => {
     res.status(200).send(`livro removido com sucesso!`);
   }
 });
+
 export default app;
