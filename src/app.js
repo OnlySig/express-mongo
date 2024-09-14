@@ -16,6 +16,4 @@ const app = express();
 routes(app);
 //app é uma instancia de express
 // as rotas foram para a pasta routes
-
-
 export default app;

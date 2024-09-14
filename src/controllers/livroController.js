@@ -44,7 +44,7 @@ class LivroController {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete(id)
-      res.status(200).json({ message: "livro deletado" })
+      res.status(200).json({ message: "livro deletado com sucesso!" })
     } catch (error) {
       res.status(200).json({ message: `${error.message} - FALHA ao deletar livro!` })
     }
