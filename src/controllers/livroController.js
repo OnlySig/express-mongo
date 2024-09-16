@@ -49,7 +49,7 @@ class LivroController {
       await livro.findByIdAndDelete(id);
       res.status(200).json({ message: "livro deletado com sucesso!" });
     } catch (error) {
-      res.status(200).json({ message: `${error.message} - FALHA ao deletar livro!` });
+      res.status(500).json({ message: `${error.message} - FALHA ao deletar livro!` });
     }
   }
 
@@ -57,9 +57,9 @@ class LivroController {
     const editora = req.query.editora;
     try {
       const livrosEditora = await livro.find({editora});
-      res.status(200).json(livrosEditora)
+      res.status(200).json(livrosEditora);
     } catch (error) {
-      res.status(500).json({ message: `${error.message} - Falha ao buscar livros!` })
+      res.status(500).json({ message: `${error.message} - Falha ao buscar livros!` });
     }
   }
 };

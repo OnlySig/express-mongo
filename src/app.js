@@ -1,7 +1,7 @@
 //nesse file iremos iniciar o express
-import express from 'express';
-import connectarNoDb from './config/dbConnect.js';
-import routes from './routes/index.js';
+import express from "express";
+import connectarNoDb from "./config/dbConnect.js";
+import routes from "./routes/index.js";
 
 const conexao = await connectarNoDb();
 conexao.on("error", (error) => {
@@ -9,7 +9,7 @@ conexao.on("error", (error) => {
 });
 
 conexao.once("open", () => {
-  console.log('Conexão com o mongoDb feita com sucesso!');
+  console.log("Conexão com o mongoDb feita com sucesso!");
 });
 
 const app = express();

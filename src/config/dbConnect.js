@@ -6,4 +6,4 @@ async function connectarNoDb() {
   return mongoose.connection;
 } 
 
-export default connectarNoDb
+export default connectarNoDb;
