@@ -11,14 +11,25 @@ const livroSchema = new mongoose.Schema({
   },
   editora: { 
     type: String,
-    required: [true, "O campo editora é obrigatório!"]
+    required: [true, "O campo editora é obrigatório!"],
+    //enum: { values: ["masculino", "feminino"], message: "Exemplo de enum {VALUE}" }
   },
   preco: { 
     type: Number,
     required: [true, "O campo preço é obrigatório!"]
   },
   paginas: { 
-    type: Number 
+    type: Number,
+    min: [10, "Valor mínimo de 10 a 9999 páginas, valor {VALUE} inválido!"], //minimo permitido
+    max: [9999, "Valor mínimo de 10 a 9999 páginas, valor {VALUE} inválido!"] //maximo permitido
+    /*Validações customizadas
+    validate: {
+      validator: (value) => {
+        return value >= 10 && valor <= 9999  
+      }
+      message: "Valor mínimo de 10 a 9999 páginas, valor {VALUE} inválido!"
+    }
+    */
   },
   autor: {
     type: mongoose.Schema.Types.ObjectId, 

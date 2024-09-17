@@ -1,6 +1,6 @@
 
 import NotFound from "../errors/NotFound.js";
-import { autor } from "../models/Autor.js";
+import { autor } from "../models/index.js";
  
 class AutorController {
   static async listarAutor(req, res, next) {

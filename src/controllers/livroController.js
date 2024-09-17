@@ -1,6 +1,12 @@
-//import { autor } from "../models/Autor.js";
 import NotFound from "../errors/NotFound.js";
-import livro from "../models/Livro.js";
+import { livro } from "../models/index.js";
+
+function notfoundLivro(livro, res, next, msgFound, msgNotfound = "Livro não localizado!") {
+  livro === null || livro.length === 0 ? 
+    next(new NotFound(msgNotfound)) : 
+    msgFound ? res.status(200).json({message: msgFound}) :
+      res.status(200).json(livro);
+}
 
 class LivroController {
   
@@ -21,10 +27,7 @@ class LivroController {
       const findLivro = await livro.findById(id)
         .populate("autor")
         .exec();
-      if(!findLivro) {
-        return next(new NotFound("Livro não localizado - Not Found!"));
-      }
-      res.status(200).json(findLivro);
+      notfoundLivro(findLivro, res, next);
     } catch (error) {
       next(error);
     }
@@ -33,8 +36,8 @@ class LivroController {
   static async atualizarLivroPorId(req, res, next) {
     try {
       const id = req.params.id;
-      await livro.findByIdAndUpdate(id, {$set: req.body});
-      res.status(200).json({ message: "livro atualizado!" });
+      const findPut = await livro.findByIdAndUpdate(id, {$set: req.body});
+      notfoundLivro(findPut, res, next, "Livro atualizado com sucesso!");
     } catch (error) {
       next(error);
     }
@@ -56,8 +59,8 @@ class LivroController {
   static async deletaLivro(req, res, next) {
     try {
       const id = req.params.id;
-      await livro.findByIdAndDelete(id);
-      res.status(200).json({ message: "livro deletado com sucesso!" });
+      const dellLivros = await livro.findByIdAndDelete(id);
+      notfoundLivro(dellLivros, res, next, "livro deletado com sucesso!");
     } catch (error) {
       next(error);
     }
@@ -67,7 +70,7 @@ class LivroController {
     const editora = req.query.editora;
     try {
       const livrosEditora = await livro.find({editora});
-      res.status(200).json(livrosEditora);
+      notfoundLivro(livrosEditora, res, next, null, `Não foi possivel encontrar livros da editora: ${editora} `);
     } catch (error) {
       next(error);
     }
