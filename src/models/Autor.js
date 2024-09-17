@@ -6,7 +6,7 @@ const autorSchema = new mongoose.Schema({
   },
   nome: {
     type: String,
-    required: true
+    required: [true, "O nome do autor(a) é obrigatório!"], // o segundo parâmetro vai ser uma mensagem de erro personalizada!
   },
   nacionalidade: {
     type: String
