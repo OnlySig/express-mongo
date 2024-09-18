@@ -1,15 +1,7 @@
-import NotFound from "../errors/NotFound.js";
 import { livro } from "../models/index.js";
-
-function notfoundLivro(livro, res, next, msgFound, msgNotfound = "Livro não localizado!") {
-  livro === null || livro.length === 0 ? 
-    next(new NotFound(msgNotfound)) : 
-    msgFound ? res.status(200).json({message: msgFound}) :
-      res.status(200).json(livro);
-}
+import { notfoundControllers, processaBusca } from "./index.js";
 
 class LivroController {
-  
   static async listarLivros(req, res, next) {
     try {
       const listaLivros = await livro.find()
@@ -27,7 +19,7 @@ class LivroController {
       const findLivro = await livro.findById(id)
         .populate("autor")
         .exec();
-      notfoundLivro(findLivro, res, next);
+      notfoundControllers(findLivro, res, next);
     } catch (error) {
       next(error);
     }
@@ -37,7 +29,7 @@ class LivroController {
     try {
       const id = req.params.id;
       const findPut = await livro.findByIdAndUpdate(id, {$set: req.body});
-      notfoundLivro(findPut, res, next, "Livro atualizado com sucesso!");
+      notfoundControllers(findPut, res, next, "Livro atualizado com sucesso!");
     } catch (error) {
       next(error);
     }
@@ -60,17 +52,19 @@ class LivroController {
     try {
       const id = req.params.id;
       const dellLivros = await livro.findByIdAndDelete(id);
-      notfoundLivro(dellLivros, res, next, "livro deletado com sucesso!");
+      notfoundControllers(dellLivros, res, next, "livro deletado com sucesso!");
     } catch (error) {
       next(error);
     }
   }
 
-  static async listarLivrosPorEditora(req, res, next) {
-    const editora = req.query.editora;
+  static async listarLivrosPorFiltro(req, res, next) {
     try {
-      const livrosEditora = await livro.find({editora});
-      notfoundLivro(livrosEditora, res, next, null, `Não foi possivel encontrar livros da editora: ${editora} `);
+      const busca = await processaBusca(req.query);
+      if(!busca) return res.status(200).json([]);
+      const livrosEditora = await livro.find(busca)
+        .populate("autor");
+      notfoundControllers(livrosEditora, res, next, null, `Não foi possivel encontrar livros ${busca.editora ? `da editora: ${busca.editora.source}` : ""}`);
     } catch (error) {
       next(error);
     }
