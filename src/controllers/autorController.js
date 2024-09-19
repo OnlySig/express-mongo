@@ -1,11 +1,13 @@
 import { autor } from "../models/index.js";
-import { newRegExp, notfoundControllers } from "./index.js";
+import { notfoundControllers, processaBusca } from "./index.js";
 
 class AutorController {
   static async listarAutor(req, res, next) {
     try {
-      const listaAutores = await autor.find({});
-      res.status(200).json(listaAutores);
+      const listaAutores = autor.find();
+      req.resultado = listaAutores;
+      //console.log(listaAutores);
+      next();
     } catch (error) {
       next(error);
     }
@@ -49,12 +51,11 @@ class AutorController {
 
   static async buscaAutorPorFiltro(req, res, next) {
     try {
-      const { nacionalidade, nome } = req.query;
-      const busca = {};
-      nacionalidade ? busca.nacionalidade = newRegExp(nacionalidade) : null;
-      nome ? busca.nome = newRegExp(nome) : null;
-      const findAutor = await autor.find(busca);
-      notfoundControllers(findAutor, res, next, null, "autor não encontrado");
+      const busca = await processaBusca(req.query);
+      if(!busca) return res.status(200).json([]);
+      const findAutor = autor.find(busca);
+      req.resultado = findAutor;
+      next();
     } catch (error) {
       next(error);
     }

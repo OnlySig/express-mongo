@@ -4,10 +4,9 @@ import { notfoundControllers, processaBusca } from "./index.js";
 class LivroController {
   static async listarLivros(req, res, next) {
     try {
-      const listaLivros = await livro.find()
-        .populate("autor")
-        .exec();
-      res.status(200).json(listaLivros);
+      const buscaLivros = livro.find();
+      req.resultado = buscaLivros;
+      next();
     } catch (error) {
       next(error);
     }
@@ -62,9 +61,10 @@ class LivroController {
     try {
       const busca = await processaBusca(req.query);
       if(!busca) return res.status(200).json([]);
-      const livrosEditora = await livro.find(busca)
+      const livrosResult = livro.find(busca)
         .populate("autor");
-      notfoundControllers(livrosEditora, res, next, null, `Não foi possivel encontrar livros ${busca.editora ? `da editora: ${busca.editora.source}` : ""}`);
+      req.resultado = livrosResult;
+      next();
     } catch (error) {
       next(error);
     }

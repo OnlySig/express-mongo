@@ -2,11 +2,22 @@ import NotFound from "../errors/NotFound.js";
 import autor from "../models/Autor.js";
 
 export async function processaBusca(params){
-  const { editora, titulo, pages_min, pages_max, preco_min, preco_max, nomeAutor } = params;
+  const { 
+    editora, 
+    titulo, 
+    pages_min, 
+    pages_max, 
+    preco_min, 
+    preco_max, 
+    nomeAutor,//nome de autores para filtrar na rota de LIVROS!
+    autor_nome,//nome de autores para filtrar na rota de autores
+    autor_nacional
+  } = params;
   const busca = {};
+  
+  //rota livros
   if(editora) busca.editora = newRegExp(editora);
   if(titulo) busca.titulo = newRegExp(titulo);
-
   if(nomeAutor) {
     const regexAutor = newRegExp(nomeAutor);
     const findAutor = await autor.findOne({nome: regexAutor});
@@ -25,6 +36,10 @@ export async function processaBusca(params){
   
   if(preco_min) busca.preco.$gte = preco_min;
   if(preco_max) busca.preco.$lte = preco_max;
+
+  //rota autores
+  if(autor_nome) busca.nome = newRegExp(autor_nome);
+  if(autor_nacional) busca.nacionalidade = newRegExp(autor_nacional);
   return busca;
 }
 
